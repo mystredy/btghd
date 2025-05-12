@@ -1,1 +1,1 @@
-checkAndAddUserSimulated();
+// checkAndAddUserSimulated();
