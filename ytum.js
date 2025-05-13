@@ -1,181 +1,154 @@
 checkAndAddUserSimulated();
 
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("myBtn");
+var span = document.getElementsByClassName("close")[0];
 
-var modal = document.getElementById( & quot; myModal & quot;);
-var btn = document.getElementById( & quot; myBtn & quot;);
-var span = document.getElementsByClassName( & quot; close & quot;)[0];
+// btn.onclick = function() { modal.style.display = "block"; document.getElementById("formContainer").style.display = "block"; }
+// span.onclick = function() { modal.style.display = "none"; }
 
-// btn.onclick = function() { modal.style.display = &quot;block&quot;; document.getElementById(&quot;formContainer&quot;).style.display = &quot;block&quot;; }
-// span.onclick = function() { modal.style.display = &quot;none&quot;; }
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal) {
-        modal.style.display = & quot;
-        none & quot;;
+        modal.style.display = "none";
     }
 }
 
-let sentCode = & quot; & quot;; // Store the generated code
+let sentCode = "";
 let countdownInterval;
 
 async function sendCode() {
-        var emailInput = document.getElementById( & quot; email & quot;);
-        var firstNameInput = document.getElementById( & quot; firstName & quot;);
-        var lastNameInput = document.getElementById( & quot; lastName & quot;);
+    var emailInput = document.getElementById("email");
+    var firstNameInput = document.getElementById("firstName");
+    var lastNameInput = document.getElementById("lastName");
 
-        var email = emailInput.value.trim();
-        var firstName = firstNameInput.value.trim();
-        var lastName = lastNameInput.value.trim();
+    var email = emailInput.value.trim();
+    var firstName = firstNameInput.value.trim();
+    var lastName = lastNameInput.value.trim();
 
-        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        var namePattern = /^[A-Za-z]{3,}$/;
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var namePattern = /^[A-Za-z]{3,}$/;
 
-        var emailValid = emailPattern.test(email);
-        var firstNameValid = namePattern.test(firstName);
-        var lastNameValid = namePattern.test(lastName);
+    var emailValid = emailPattern.test(email);
+    var firstNameValid = namePattern.test(firstName);
+    var lastNameValid = namePattern.test(lastName);
 
-        document.getElementById( & quot; emailError & quot;).style.display = emailValid ? & quot;
-        none & quot;: & quot;
-        block & quot;;
-        document.getElementById( & quot; firstNameError & quot;).style.display = firstNameValid ? & quot;
-        none & quot;: & quot;
-        block & quot;;
-        document.getElementById( & quot; lastNameError & quot;).style.display = lastNameValid ? & quot;
-        none & quot;: & quot;
-        block & quot;;
+    document.getElementById("emailError").style.display = emailValid ? "none" : "block";
+    document.getElementById("firstNameError").style.display = firstNameValid ? "none" : "block";
+    document.getElementById("lastNameError").style.display = lastNameValid ? "none" : "block";
 
-        if (!emailValid || !firstNameValid || !lastNameValid) {
-            return; // Stop execution if inputs are invalid
-        }
+    if (!emailValid || !firstNameValid || !lastNameValid) {
+        return;
+    }
 
-        // &#9989; Check if email already exists 
-        const emailExists = await checkEmailExists(email);
-        if (emailExists) {
-            alert( & quot; Email already exists, please enter a new email. & quot;);
-            return; // Stop execution if email exists
-        }
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+        alert("Email already exists, please enter a new email.");
+        return;
+    }
 
-        // &#9989; Disable the button to prevent multiple clicks
-        var sendCodeButton = document.getElementById( & quot; sendCodeButton & quot;);
-        sendCodeButton.disabled = true;
-        sendCodeButton.innerHTML = `<span class='loaderr'/>`; // Show loading icon
+    var sendCodeButton = document.getElementById("sendCodeButton");
+    sendCodeButton.disabled = true;
+    sendCodeButton.innerHTML = `<span class='loaderr'></span>`;
 
-        let sentCode = Math.floor(100000 + Math.random() * 900000).toString();
-        sessionStorage.setItem( & quot; sentCode & quot;, sentCode);
+    sentCode = Math.floor(100000 + Math.random() * 900000).toString();
+    sessionStorage.setItem("sentCode", sentCode);
 
-        fetch( & quot; https: //script.google.com/macros/s/AKfycbxnD7q-yUxMIAWA9DV1mSh2qlYpBZZoZZyCTL8WkFfUCCIlBjbjUOd38Yj5VKHZLo40/exec&quot;, {
-            method: & quot; POST & quot;,
-            mode: & quot; no - cors & quot;,
-            headers: {
-                &
-                quot;Content - Type & quot;: & quot;application / json & quot;
-            },
-            body: JSON.stringify({
-                action: & quot;sendCode & quot;,
-                email: email,
-                firstName: firstName,
-                code: sentCode
-            })
+    fetch("https://script.google.com/macros/s/AKfycbxnD7q-yUxMIAWA9DV1mSh2qlYpBZZoZZyCTL8WkFfUCCIlBjbjUOd38Yj5VKHZLo40/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            action: "sendCode",
+            email: email,
+            firstName: firstName,
+            code: sentCode
         })
-    .then(() = & gt;
-    {
-        // &#9989; Disable input fields after sending code
-        emailInput.disabled = true;
-        firstNameInput.disabled = true;
-        lastNameInput.disabled = true;
-
-        startCountdown(30); // Start countdown timer
     })
-    .catch(error = & gt;
-    {
-        console.error( & quot; Request failed: & quot;, error);
-        sendCodeButton.disabled = false; // Re-enable button on failure
-        sendCodeButton.innerHTML = & quot;
-        Send Code & quot;; // Restore button text
-    });
+        .then(() => {
+            emailInput.disabled = true;
+            firstNameInput.disabled = true;
+            lastNameInput.disabled = true;
+            startCountdown(30);
+        })
+        .catch(error => {
+            console.error("Request failed:", error);
+            sendCodeButton.disabled = false;
+            sendCodeButton.innerHTML = "Send Code";
+        });
 }
 
-
-
 function startCountdown(seconds) {
-    const sendCodeButton = document.getElementById( & quot; sendCodeButton & quot;);
+    const sendCodeButton = document.getElementById("sendCodeButton");
     sendCodeButton.disabled = true;
     sendCodeButton.textContent = `Resend in ${seconds}s`;
 
-    let countdownInterval = setInterval(() = & gt;
-    {
+    countdownInterval = setInterval(() => {
         seconds--;
-        if (seconds & gt; 0) {
+        if (seconds > 0) {
             sendCodeButton.textContent = `Resend in ${seconds}s`;
         } else {
             clearInterval(countdownInterval);
             sendCodeButton.disabled = false;
-            sendCodeButton.textContent = & quot;
-            Send Code & quot;;
+            sendCodeButton.textContent = "Send Code";
         }
     }, 1000);
 }
 
 async function validateForm() {
-    var submitButton = document.getElementById( & quot; SubmitButton & quot;);
+    var submitButton = document.getElementById("SubmitButton");
     submitButton.disabled = true;
-    submitButton.innerHTML = `<span class='loaderr'/>`; // Show loading icon
+    submitButton.innerHTML = `<span class='loaderr'></span>`;
 
-    var verificationCodeInput = document.getElementById( & quot; verificationCode & quot;).value.trim();
-    document.getElementById( & quot; codeRequiredError & quot;).style.display = & quot;
-    none & quot;;
-    document.getElementById( & quot; codeError & quot;).style.display = & quot;
-    none & quot;;
-    let storedCode = sessionStorage.getItem( & quot; sentCode & quot;);
+    var verificationCodeInput = document.getElementById("verificationCode").value.trim();
+    document.getElementById("codeRequiredError").style.display = "none";
+    document.getElementById("codeError").style.display = "none";
 
-    var modal = document.getElementById( & quot; myModal & quot;);
-    // var btn = document.getElementById(&quot;myBtn&quot;);
-    // var span = document.getElementsByClassName(&quot;close&quot;)[0];
+    let storedCode = sessionStorage.getItem("sentCode");
+
+    var modal = document.getElementById("myModal");
 
     if (!verificationCodeInput) {
-        document.getElementById( & quot; codeRequiredError & quot;).style.display = & quot;
-        block & quot;;
-        resetButton(); // Reset button if validation fails
+        document.getElementById("codeRequiredError").style.display = "block";
+        resetButton();
     } else if (verificationCodeInput !== storedCode) {
-        document.getElementById( & quot; codeError & quot;).style.display = & quot;
-        block & quot;;
-        resetButton(); // Reset button if validation fails
+        document.getElementById("codeError").style.display = "block";
+        resetButton();
     } else {
-        // alert(&quot;Code verified successfully!&quot;);
         try {
             const userId = await getTelegramUserId();
-            const messageSent = await sendTelegramMessage(userId, & quot; You have been registered & quot;);
-            modal.style.display = & quot;
-            none & quot;;
+            const messageSent = await sendTelegramMessage(userId, "You have been registered");
+            modal.style.display = "none";
             if (messageSent) {
-                await addUserToGoogleSheet(userId, document.getElementById( & quot; email & quot;).value.trim(), document.getElementById( & quot; firstName & quot;).value.trim(), document.getElementById( & quot; lastName & quot;).value.trim());
+                await addUserToGoogleSheet(
+                    userId,
+                    document.getElementById("email").value.trim(),
+                    document.getElementById("firstName").value.trim(),
+                    document.getElementById("lastName").value.trim()
+                );
                 resetForm();
-                alert( & quot; Thanks
-                    for joining BigTech NG! & quot;);
+                alert("Thanks for joining BigTech NG!");
             }
         } catch (error) {
-            alert( & quot; Registration failed: & quot; + error);
+            alert("Registration failed: " + error);
         }
     }
-    resetButton(); // Reset button if validation fails
+
+    resetButton();
 }
 
 function resetButton() {
-    var submitButton = document.getElementById( & quot; SubmitButton & quot;);
+    var submitButton = document.getElementById("SubmitButton");
     submitButton.disabled = false;
-    submitButton.innerHTML = & quot;
-    Submit & quot;;
+    submitButton.innerHTML = "Submit";
 }
 
 function resetForm() {
-    document.getElementById( & quot; registrationForm & quot;).reset(); // Resets the form fields
-    document.getElementById( & quot; emailError & quot;).style.display = & quot;
-    none & quot;;
-    document.getElementById( & quot; firstNameError & quot;).style.display = & quot;
-    none & quot;;
-    document.getElementById( & quot; lastNameError & quot;).style.display = & quot;
-    none & quot;;
-    document.getElementById( & quot; codeError & quot;).style.display = & quot;
-    none & quot;;
-    document.getElementById( & quot; codeRequiredError & quot;).style.display = & quot;
-    none & quot;;
+    document.getElementById("registrationForm").reset();
+    document.getElementById("emailError").style.display = "none";
+    document.getElementById("firstNameError").style.display = "none";
+    document.getElementById("lastNameError").style.display = "none";
+    document.getElementById("codeError").style.display = "none";
+    document.getElementById("codeRequiredError").style.display = "none";
 }
