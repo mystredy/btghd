@@ -1,4 +1,4 @@
-checkAndAddUserSimulated();
+// checkAndAddUserSimulated();
 
 
 var modal = document.getElementById( & quot; myModal & quot;);
