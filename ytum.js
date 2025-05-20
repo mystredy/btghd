@@ -1,55 +1,6 @@
 checkAndAddUserSimulated();
 
 
-async function getAccessToken() {
-    const now = Math.floor(Date.now() / 1000);
-    const expiry = now + 3600;
-
-    const header = {
-        alg: 'RS256',
-        typ: 'JWT'
-    };
-    const payload = {
-        iss: mtns, // Replace with your service account client_email
-        scope: 'https://www.googleapis.com/auth/spreadsheets',
-        aud: 'https://oauth2.googleapis.com/token',
-        exp: expiry,
-        iat: now
-    };
-    const jwt = KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), mgtr); // Replace mgtr with your private key
-    const response = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            assertion: jwt
-        })
-    });
-    const data = await response.json();
-    return data.access_token;
-}
-
-// Function to get Telegram user ID from Telegram Web App
-function getTelegramUserId() {
-    return new Promise((resolve, reject) => {
-        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        var isTelegram = /Telegram/i.test(userAgent) || window.Telegram?.WebApp;
-        if (isTelegram && window.Telegram.WebApp.initDataUnsafe?.user) {
-            var user = window.Telegram.WebApp.initDataUnsafe.user;
-            resolve(user.id);
-        } else {
-            // Add a delay before showing the prompt
-            setTimeout(() => {
-                if (confirm("Kindly visit our Telegram Web App for more features. Click OK to proceed.")) {
-                    window.location.href = "https://t.me/bigtechngbot/web?startapp";
-                }
-            }, 30000);
-            reject("Not in Telegram Web App");
-        }
-    });
-}
 
 // modal finctions
 var modal = document.getElementById("myModal");
