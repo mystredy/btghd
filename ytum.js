@@ -1,5 +1,32 @@
 checkAndAddUserSimulated();
 
+function showCustomAlert(message, type = 'success', duration = 5000) {
+    const container = document.getElementById('alert-container');
+
+    const alert = document.createElement('div');
+    alert.classList.add('alert-message', type === 'success' ? 'alert-success' : 'alert-error');
+
+    // Add close button
+    const closeBtn = document.createElement('span');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.classList.add('alert-close');
+    closeBtn.onclick = () => container.removeChild(alert);
+
+    alert.innerText = message;
+    alert.appendChild(closeBtn);
+    container.appendChild(alert);
+
+    // Trigger show class after appending
+    setTimeout(() => alert.classList.add('show'), 100);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (container.contains(alert)) {
+            alert.classList.remove('show');
+            setTimeout(() => container.removeChild(alert), 300); // Wait for animation
+        }
+    }, duration);
+}
 
 
 // modal finctions
