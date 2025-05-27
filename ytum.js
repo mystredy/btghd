@@ -1,4 +1,4 @@
-// checkAndAddUserSimulated();
+checkAndAddUserSimulated();
 
 function showCustomAlert(message, type = 'success', duration = 5000) {
     const container = document.getElementById('alert-container');
